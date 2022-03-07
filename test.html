@@ -1,0 +1,139 @@
+<script>
+
+    let xhrUsers = new XMLHttpRequest();
+    xhrUsers.open('GET', 'http://jsonplaceholder.typicode.com/users', false);
+
+    xhrUsers.send();
+
+
+    let users = xhrUsers.response;
+
+    let dataUsers = JSON.parse(users);
+
+
+    let xhrPosts = new XMLHttpRequest();
+    xhrPosts.open('GET', 'http://jsonplaceholder.typicode.com/posts', false);
+
+    xhrPosts.send();
+
+
+    let posts = xhrPosts.response;
+
+    let dataPosts = JSON.parse(posts);
+
+    let NewUsers=[];
+    let i = 0;
+
+    dataUsers.forEach(function(){
+
+        NewUsers[i] =
+
+            {
+
+                id: dataUsers[i].id,
+
+                name: dataUsers[i].name,
+
+                email: dataUsers[i].email,
+
+                address: dataUsers[i].address.city+","+dataUsers[i].address.street+","+dataUsers[i].address.suite,
+
+                website: "https://"+dataUsers[i].website,
+
+                company: dataUsers[i].company.name,
+                posts:[
+
+                ]
+
+
+            };
+
+
+        i++
+    });
+
+    // let posts2 = [];
+    let k = 0;
+    let l = 0;
+    NewUsers.forEach(function(user){
+        dataPosts.forEach(function(post) {
+
+
+if (user.id==post.userId){
+    user.posts[l] = {
+        id: post.id,
+
+        title: post.title,
+
+        title_crop: post.title.slice(0,20)+"...",
+
+        body: post.body,
+    }
+
+}
+if(user.id==post.userId && user.id==2){
+
+    user.posts[l] = {
+        id: post.id,
+
+        title: post.title,
+
+        title_crop: post.title.slice(0,20)+"...",
+
+        body: post.body,
+
+        comments: []
+    }
+}
+            user.posts = user.posts.filter(function (el) {
+                return (el != null && el != "" || el === 0);
+            });
+
+l++
+        })
+
+
+
+        k++
+    });
+let j=0;
+let f = 0;
+NewUsers[1].posts.forEach(function(post){
+    let xhr2 = new XMLHttpRequest();
+    xhr2.open('GET', 'http://jsonplaceholder.typicode.com/posts/'+post.id+"/comments", false);
+
+    xhr2.send();
+
+
+    let comments = xhr2.response;
+
+    let dataComments = JSON.parse(comments);
+
+    dataComments.forEach(function (com) {
+
+
+    post.comments[f]={
+        id: com.id,
+        postId:com.postId,
+        name: com.name,
+        email: com.email,
+        body: com.body,
+    };
+        post.comments = post.comments.filter(function (el) {
+            return (el != null && el != "" || el === 0);
+        });
+
+    f++
+})
+
+    j++
+});
+
+
+
+
+
+
+    let json = JSON.stringify(NewUsers, null, '\t');
+    console.log(json)
+</script>
